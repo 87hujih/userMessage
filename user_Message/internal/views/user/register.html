@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <link rel="stylesheet" href="../../../static/css/styles.css">
+    <link rel="stylesheet" href="../../../static/css/base.css">
+    <script src="../../../static/js/jquery-3.7.1.js"></script>
+    <script src="../../../static/js/register.js"></script>
+</head>
+<body>
+<div class="center">
+    <div class="subject1">
+        <div class="container">
+            <div class="login-box">
+                <h2>欢迎注册</h2>
+                <form action="/register" method="post" id="registerForm">
+                    <!-- 用户名输入框 -->
+                    <div class="input-group">
+                        <i class="iconfont icon-guanbi"></i>
+                        <input type="text" id="username" placeholder="用户名" name="username" required>
+                        <div class="error-message" id="usernameRemind">用户名不能为空</div>
+                    </div>
+                    <!-- 密码输入框 -->
+                    <div class="input-group">
+                        <i class="iconfont icon-denglushimima"></i>
+                        <input type="password" id="password" placeholder="密码" name="password" required>
+                        <img src="../../../static/img/icon-eye-visable@2x.png" alt="眼睛图标" id="eyeIcon">
+                        <div class="error-message" id="passwordRemind">密码至少为8位数，且必须包含字母和数字</div>
+                    </div>
+                    <!-- 手机号码输入框 -->
+                    <div class="input-group">
+                        <div class="number">+86</div>
+                        <input type="text" id="phone" placeholder="手机号" name="phone"  required>
+                    </div>
+                    <!-- 注册按钮 -->
+                    <button type="submit">注 册</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function (){
+        $("#registerForm").on("submit",function (e){
+            e.preventDefault(); // 阻止默认提交
+            const password = $("#password").val();
+            const phone = $("#phone").val();
+            // 密码格式验证
+            if (!/^(?=.*[A-Za-z])(?=.*\d).{8,20}$/.test(password)) {
+                alert("密码需8-20位，包含字母和数字");
+                return;
+            }
+            // 手机号格式验证
+            if (!/^1[0-9]{10}$/.test(phone)) {
+                alert("手机号格式不正确");
+                return;
+            }
+            $.post("/register",$(this).serialize(),function (response){
+                if (!response || typeof response !== "object") {
+                    alert("无效的服务器响应");
+                    return;
+                }
+                if (response.code===200) {
+                    window.location.href = "/login" // 跳转到登录页面
+                }else if (response.code===400){
+                    alert("错误:"+response.message);
+                }else if(response.code===500){
+                    alert("服务器内部错误，请稍后再试..！")
+                }else {
+                    alert("未知错误")
+                }
+            }).fail(function (){
+                alert("请求失败，请重试！")
+            })
+        })
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>找回密码</title>
+    <link rel="stylesheet" href="../../../static/css/styles.css">
+    <link rel="stylesheet" href="../../../static/css/base.css">
+    <script src="../../../static/js/jquery-3.7.1.js"></script>
+    <script src="../../../static/js/seek.js"></script>
+</head>
+<body>
+<div class="center">
+    <div class="subject1">
+        <div class="container">
+            <div class="login-box">
+                <h2>找回密码</h2>
+                <form action="/seekPsd" method="post" id="seekPsdForm">
+                    <!-- 手机号输入框 -->
+                    <div class="input-group">
+                        <i class="iconfont icon-guanbi"></i>
+                        <input type="text" placeholder="手机号" name="phone" id="phone" required>
+                    </div>
+                    <!-- 密码输入框 -->
+                    <div class="input-group">
+                        <i class="iconfont icon-denglushimima"></i>
+                        <img src="../../../static/img/icon-eye-visable@2x.png" alt="眼睛图标" id="eyeIcon">
+                        <input type="password" placeholder="新密码" name="password" id="password" required>
+                        <div class="error-message" id="seekPsdRemind">密码至少为8位数，且必须包含字母和数字</div>
+                    </div>
+                    <!-- 确认按钮 -->
+                    <button type="submit">确 认</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#seekPsdForm").on("submit", function (e) {
+            e.preventDefault(); // 阻止默认提交行为
+            const password = $("#password").val();
+            const phone = $("#phone").val();
+            // 格式验证
+            if (!/^(?=.*[A-Za-z])(?=.*\d).{8,20}$/.test(password)) {
+                alert("密码需8-20位，包含字母和数字");
+                return;
+            }
+            if (!/^1[0-9]{10}$/.test(phone)) {
+                alert("手机号格式不正确");
+                return;
+            }
+            // 如果格式验证通过，发送 POST 请求
+            $.post("/seekPsd", $(this).serialize(), function (response) {
+                if (!response || typeof response !== "object") {
+                    alert("无效的服务器响应");
+                    return;
+                }
+                if (response.code===200) {
+                    window.location.href = "/login"; // 注册成功后跳转
+                } else if (response.code===400){
+                    alert("错误"+response.message);
+                }else if(response.code===500){
+                    alert("服务器内部错误，请稍后再试！")
+                }else {
+                    alert("未知错误")
+                }
+            }).fail(function () {
+                alert("请求失败，请重试！");
+            });
+        });
+    });
+</script>
+</body>
+</html>

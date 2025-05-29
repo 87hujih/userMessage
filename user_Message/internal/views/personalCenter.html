@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../static/css/base.css">
+    <link rel="stylesheet" href="../../static/css/styles.css">
+    <script src="../../static/js/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="center">
+    <div class="home_subject1">
+        <a href="/homePage" style="display: block;border-radius: 10px; border: 2px solid #00a1ff; margin-top: -700px;">返回</a>
+        <div class="personal_page">
+            <div class="personal_information">
+                <div class="personal">
+                    <img id="userAvatar"
+                         class="headshot"
+                         src="{{ if .AvatarURL }}/user_img/{{ .AvatarURL }}{{ else }}/static/img/R-C.jpg{{ end }}"
+                         alt="用户头像">
+                    <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display: none;">
+                    <p class="title">用户名: {{ .Username }}</p>
+                </div>
+            </div>
+
+            <div class="refine_information">
+                <div class="container_refine">
+                    <h2>个人信息完善</h2>
+                    <!-- 提示信息 -->
+                    <div id="formMessage" class="form-message"></div>
+
+                    <!-- 表单 -->
+                    <form id="profileForm" novalidate>
+                        <div class="form-group">
+                            <label for="username">用户名:</label>
+                            <input type="text" id="username" name="username" value="{{ .Username }}" placeholder="请输入用户名"
+                                   style="width: 100%;
+                                   padding: 10px;
+                                   border: 1px solid #ddd;
+                                   border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label for="age">年龄:</label>
+                            <input type="number"
+                                   id="age"
+                                   name="age"
+                                   min="0"
+                                   value="{{ .Age }}"
+                                   placeholder="请输入年龄"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">电子邮箱:</label>
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   value="{{ .Email }}"
+                                   placeholder="请输入电子邮箱"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender">性别:</label>
+                            <select id="gender" name="gender" required>
+                                <option value="">请选择性别</option>
+                                <option value="男" {{ if eq .Gender "男" }}selected{{ end }}>男</option>
+                                <option value="女" {{ if eq .Gender "女" }}selected{{ end }}>女</option>
+                                <option value="其它" {{ if eq .Gender "其它" }}selected{{ end }}>其它</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">保存信息</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // 表单提交：个人信息
+        $("#profileForm").on("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {
+                username: formData.get("username"),
+                age: formData.get("age"),
+                email: formData.get("email"),
+                gender: formData.get("gender")
+            };
+
+            // 校验年龄是否为负数
+            if (parseInt(data.age) < 0) {
+                alert("年龄不能为负数");
+                return;
+            }
+
+            $.post("/personalCenter", data, function (response) {
+                if (!response || typeof response !== "object") {
+                    alert("无效的服务器响应");
+                    return;
+                }
+
+                if (response.code === 200) {
+                    alert("信息修改成功");
+                } else if (response.code === 500) {
+                    alert("错误：" + response.message);
+                } else {
+                    alert("未知错误");
+                }
+            }).fail(function () {
+                alert("请求失败，请重试！");
+            });
+        });
+
+        // 头像上传
+        $("#userAvatar").on("click", function () {
+            $("#avatarInput").click();
+        });
+
+        // 文件选择框变化 → 上传头像
+        $("#avatarInput").on("change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append("avatar", file);
+            $.ajax({
+                url: "/uploadAvatar",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.code === 200) {
+                        $("#userAvatar").attr("src", "/user_img/" + response.filename + "?t=" + new Date().getTime());
+                        alert("头像更换成功");
+                        location.reload()
+                    } else {
+                        alert("上传失败：" + response.message);
+                    }
+                },
+                error: function () {
+                    alert("网络错误，请重试");
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>
