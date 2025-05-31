@@ -3418,7 +3418,7 @@ jQuery.extend( {
 		var tuples = [
 
 				// action, add listener, callbacks,
-				// ... .then controllers, argument index, [final state]
+				// ... .then handlers, argument index, [final state]
 				[ "notify", "progress", jQuery.Callbacks( "memory" ),
 					jQuery.Callbacks( "memory" ), 2 ],
 				[ "resolve", "done", jQuery.Callbacks( "once memory" ),
@@ -3536,7 +3536,7 @@ jQuery.extend( {
 									// Handle all other returned values
 									} else {
 
-										// Only substitute controllers pass on context
+										// Only substitute handlers pass on context
 										// and multiple values (non-spec behavior)
 										if ( handler !== Identity ) {
 											that = undefined;
@@ -3567,7 +3567,7 @@ jQuery.extend( {
 											// Ignore post-resolution exceptions
 											if ( depth + 1 >= maxDepth ) {
 
-												// Only substitute controllers pass on context
+												// Only substitute handlers pass on context
 												// and multiple values (non-spec behavior)
 												if ( handler !== Thrower ) {
 													that = undefined;
@@ -4840,7 +4840,7 @@ function returnFalse() {
 function on( elem, types, selector, data, fn, one ) {
 	var origFn, type;
 
-	// Types can be a map of types/controllers
+	// Types can be a map of types/handlers
 	if ( typeof types === "object" ) {
 
 		// ( types-Object, selector, data )
@@ -4958,12 +4958,12 @@ jQuery.event = {
 			type = origType = tmp[ 1 ];
 			namespaces = ( tmp[ 2 ] || "" ).split( "." ).sort();
 
-			// There *must* be a type, no attaching namespace-only controllers
+			// There *must* be a type, no attaching namespace-only handlers
 			if ( !type ) {
 				continue;
 			}
 
-			// If event changes its type, use the special event controllers for the changed type
+			// If event changes its type, use the special event handlers for the changed type
 			special = jQuery.event.special[ type ] || {};
 
 			// If selector defined, determine special event api type, otherwise given type
@@ -4972,7 +4972,7 @@ jQuery.event = {
 			// Update special based on newly reset type
 			special = jQuery.event.special[ type ] || {};
 
-			// handleObj is passed to all event controllers
+			// handleObj is passed to all event handlers
 			handleObj = jQuery.extend( {
 				type: type,
 				origType: origType,
@@ -5075,8 +5075,8 @@ jQuery.event = {
 				}
 			}
 
-			// Remove generic event handler if we removed something and no more controllers exist
-			// (avoids potential for endless recursion during removal of special event controllers)
+			// Remove generic event handler if we removed something and no more handlers exist
+			// (avoids potential for endless recursion during removal of special event handlers)
 			if ( origCount && !handlers.length ) {
 				if ( !special.teardown ||
 					special.teardown.call( elem, namespaces, elemData.handle ) === false ) {
@@ -5121,7 +5121,7 @@ jQuery.event = {
 			return;
 		}
 
-		// Determine controllers
+		// Determine handlers
 		handlerQueue = jQuery.event.handlers.call( this, event, handlers );
 
 		// Run delegates first; they may want to stop propagation beneath us
@@ -5168,7 +5168,7 @@ jQuery.event = {
 			delegateCount = handlers.delegateCount,
 			cur = event.target;
 
-		// Find delegate controllers
+		// Find delegate handlers
 		if ( delegateCount &&
 
 			// Support: IE <=9
@@ -5211,7 +5211,7 @@ jQuery.event = {
 			}
 		}
 
-		// Add the remaining (directly-bound) controllers
+		// Add the remaining (directly-bound) handlers
 		cur = this;
 		if ( delegateCount < handlers.length ) {
 			handlerQueue.push( { elem: cur, handlers: handlers.slice( delegateCount ) } );
@@ -5389,8 +5389,8 @@ function leverageNative( el, type, isSetup ) {
 					this
 				) );
 
-				// Abort handling of the native event by all jQuery controllers while allowing
-				// native controllers on the same element to run. On target, this is achieved
+				// Abort handling of the native event by all jQuery handlers while allowing
+				// native handlers on the same element to run. On target, this is achieved
 				// by stopping immediate propagation just on the jQuery event. However,
 				// the native event is re-wrapped by a jQuery one on each level of the
 				// propagation so the only way to stop it for jQuery is to stop it for
@@ -5544,7 +5544,7 @@ jQuery.each( { focus: "focusin", blur: "focusout" }, function( type, delegateTyp
 			// Support: IE 11+
 			// Attach a single focusin/focusout handler on the document while someone wants
 			// focus/blur. This is because the former are synchronous in IE while the latter
-			// are async. In other browsers, all those controllers are invoked synchronously.
+			// are async. In other browsers, all those handlers are invoked synchronously.
 
 			// `handle` from private data would already wrap the event, but we need
 			// to change the `type` here.
@@ -5822,7 +5822,7 @@ function cloneCopyEvent( src, dest ) {
 		return;
 	}
 
-	// 1. Copy private data: events, controllers, etc.
+	// 1. Copy private data: events, handlers, etc.
 	if ( dataPriv.hasData( src ) ) {
 		pdataOld = dataPriv.get( src );
 		events = pdataOld.events;
@@ -8571,7 +8571,7 @@ jQuery.extend( jQuery.event, {
 			event :
 			new jQuery.Event( type, typeof event === "object" && event );
 
-		// Trigger bitmask: & 1 for native controllers; & 2 for jQuery (always true)
+		// Trigger bitmask: & 1 for native handlers; & 2 for jQuery (always true)
 		event.isTrigger = onlyHandlers ? 2 : 3;
 		event.namespace = namespaces.join( "." );
 		event.rnamespace = event.namespace ?
@@ -8614,7 +8614,7 @@ jQuery.extend( jQuery.event, {
 			}
 		}
 
-		// Fire controllers on the event path
+		// Fire handlers on the event path
 		i = 0;
 		while ( ( cur = eventPath[ i++ ] ) && !event.isPropagationStopped() ) {
 			lastElement = cur;
@@ -10151,7 +10151,7 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 
 	if ( !context ) {
 
-		// Stop scripts or inline event controllers from being executed immediately
+		// Stop scripts or inline event handlers from being executed immediately
 		// by using document.implementation
 		if ( support.createHTMLDocument ) {
 			context = document.implementation.createHTMLDocument( "" );

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"web_userMessage/user_Message/internal/controllers"
+	"web_userMessage/user_Message/internal/handlers"
 )
 
 func main() {
@@ -15,17 +15,17 @@ func main() {
 	}
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("user_Message/static"))))
 	http.Handle("/user_img/", http.StripPrefix("/user_img/", http.FileServer(http.Dir("user_Message/user_img"))))
-	http.HandleFunc("/index", controllers.Index)
-	http.HandleFunc("/login", controllers.Login)
-	http.HandleFunc("/register", controllers.Register)
-	http.HandleFunc("/seekPsd", controllers.SeekPsd)
-	http.HandleFunc("/homePage", controllers.HomePage)
-	http.HandleFunc("/personalCenter", controllers.PerCenter)
-	http.HandleFunc("/uploadAvatar", controllers.UploadAvatar)
-	http.HandleFunc("/getUserById", controllers.GetUserById)
-	http.HandleFunc("/modifyInformation", controllers.UpdateUser)
-	http.HandleFunc("/deleterUser", controllers.DeleterUser)
-	http.HandleFunc("/logout", controllers.Logout)
+	http.HandleFunc("/index", handlers.Index)
+	http.HandleFunc("/login", handlers.Login)
+	http.HandleFunc("/register", handlers.Register)
+	http.HandleFunc("/seekPsd", handlers.SeekPsd)
+	http.HandleFunc("/homePage", handlers.HomePage)
+	http.HandleFunc("/personalCenter", handlers.PerCenter)
+	http.HandleFunc("/uploadAvatar", handlers.UploadAvatar)
+	http.HandleFunc("/getUserById", handlers.GetUserById)
+	http.HandleFunc("/modifyInformation", handlers.UpdateUser)
+	http.HandleFunc("/deleterUser", handlers.DeleterUser)
+	http.HandleFunc("/logout", handlers.Logout)
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Panicln(err)
