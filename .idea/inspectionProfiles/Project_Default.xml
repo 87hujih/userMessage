@@ -1,0 +1,15 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="GoDfaErrorMayBeNotNil" enabled="true" level="WARNING" enabled_by_default="true">
+      <functions>
+        <function importPath="database/sql" name="Open" />
+        <function importPath="web_userMessage/user_Message/models" name="GetUser" />
+      </functions>
+      <methods>
+        <method importPath="database/sql" receiver="*DB" name="Exec" />
+        <method importPath="github.com/gorilla/sessions" receiver="*CookieStore" name="Get" />
+      </methods>
+    </inspection_tool>
+  </profile>
+</component>
