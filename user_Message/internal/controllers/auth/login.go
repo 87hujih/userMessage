@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"github.com/gorilla/sessions"
 	"html/template"
 	"log"
 	"net/http"
@@ -49,6 +50,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 		session.Values["phone"] = phone
 		session.Values["userId"] = u.UserId.Int64
+		session.Options = &sessions.Options{
+			Path:     "/",
+			MaxAge:   86400, // 一天
+			HttpOnly: true,
+			Secure:   false, // 开发环境可用 false，生产环境用 true
+			SameSite: http.SameSiteLaxMode,
+		}
 		err = session.Save(r, w)
 		if err != nil {
 			log.Println(err)
