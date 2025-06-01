@@ -9,18 +9,6 @@ import (
 	"web_userMessage/user_Message/pkg/utils"
 )
 
-type User struct {
-	UserId       sql.NullInt64
-	UserPhone    sql.NullString
-	UserName     sql.NullString
-	IsAdmin      sql.NullInt64
-	Age          sql.NullInt64
-	Gender       sql.NullString
-	RegisterData sql.NullString
-	Email        sql.NullString
-	AvatarURL    sql.NullString
-}
-
 var db *sql.DB
 
 func init() {
@@ -35,30 +23,21 @@ func init() {
 /*注册相关操作*/
 
 // RegisterUser  注册
-func RegisterUser(username string, password string, phone string) (err error) {
-	isPhoneExit := CheckNumber(phone)
-	if isPhoneExit {
+func RegisterUser(username, password, phone string) error {
+	if CheckNumber(phone) {
 		return utils.ERROR_USER_EXISTS
-	} else {
-		userResult, err := db.Exec("insert into users (name,password,phone_number) values (?,?,?)", username, password, phone)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-		userID, err := userResult.LastInsertId()
-		if err != nil {
-			log.Println(err)
-			return err
-
-		}
-		now := time.Now().Format("2006-01-02")
-		_, err = db.Exec("insert into information (user_id,register_date) values (?,?)", userID, now)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
 	}
-	return nil
+	result, err := DB.Exec("INSERT INTO users (name, password, phone_number) VALUES (?, ?, ?)", username, password, phone)
+	if err != nil {
+		return err
+	}
+	userID, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	now := time.Now().Format("2006-01-02")
+	_, err = DB.Exec("INSERT INTO information (user_id, register_date) VALUES (?, ?)", userID, now)
+	return err
 }
 
 // CheckNumber 检查手机号是否重复

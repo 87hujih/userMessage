@@ -1,10 +1,11 @@
-package handlers
+package auth
 
 import (
 	"errors"
 	"html/template"
 	"log"
 	"net/http"
+	"web_userMessage/user_Message/internal/controllers/user"
 	md "web_userMessage/user_Message/internal/models"
 	"web_userMessage/user_Message/pkg/utils"
 )
@@ -37,7 +38,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// 登录成功 设置session
-		session, err := Store.Get(r, StoreName)
+		session, err := user.Store.Get(r, user.StoreName)
 		if err != nil {
 			log.Println(err)
 			return

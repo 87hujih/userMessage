@@ -1,4 +1,4 @@
-package handlers
+package user
 
 import (
 	"fmt"
@@ -13,8 +13,8 @@ import (
 
 const (
 	StoreName = "MMM-666"
-	// 存放头像的目录
-	avatarDir = "user_Message/user_img"
+	// AvatarDir 存放头像的目录
+	AvatarDir = "user_Message/user_img"
 	//登录目录
 	loginName = "/login"
 )

@@ -1,4 +1,4 @@
-package handlers
+package upload
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"web_userMessage/user_Message/internal/controllers/user"
 	md "web_userMessage/user_Message/internal/models"
 	cm "web_userMessage/user_Message/pkg/utils"
 )
@@ -39,7 +40,7 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "仅支持图片格式", http.StatusBadRequest)
 		return
 	}
-	session, err := Store.Get(r, StoreName)
+	session, err := user.Store.Get(r, user.StoreName)
 	if err != nil {
 		http.Error(w, "会话无效", http.StatusInternalServerError)
 		return
@@ -52,7 +53,7 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 	// 生成唯一文件名
 	filename := generateUniqueFilename(handler.Filename)
 	// 保存文件
-	filePath := filepath.Join(avatarDir, filename)
+	filePath := filepath.Join(user.AvatarDir, filename)
 	if err := saveUploadedFile(file, filePath); err != nil {
 		http.Error(w, "文件保存失败", http.StatusInternalServerError)
 		return
