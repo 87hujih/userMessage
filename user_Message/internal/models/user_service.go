@@ -93,7 +93,6 @@ func GetUser(phone string) (u *User, err error) {
 	row := db.QueryRow("select u.user_id,u.name,u.is_admin,i.age,i.email,i.gender,i.avatar_url from information i join users u on i.user_id=u.user_id where u.phone_number=?", phone)
 	err = row.Scan(&u.UserId, &u.UserName, &u.IsAdmin, &u.Age, &u.Email, &u.Gender, &u.AvatarURL)
 	if err != nil {
-		log.Println(err)
 		return &User{}, err
 	}
 	return u, nil
@@ -137,25 +136,6 @@ func GetAllUser(page, limit int) ([]User, error) {
 	}
 	return users, nil
 }
-
-// GetAllUser 获取所有用户信息
-//func GetAllUser() ([]User, error) {
-//	rows, err := db.Query("select u.user_id,u.name,u.phone_number,u.is_admin,i.age,i.gender,i.register_date,i.avatar_url from information i join users u on i.user_id=u.user_id")
-//	if err != nil {
-//		fmt.Println(err)
-//		return nil, err
-//	}
-//	var users []User
-//	for rows.Next() {
-//		var user User
-//		if err := rows.Scan(&user.UserId, &user.UserName, &user.UserPhone, &user.IsAdmin, &user.Age, &user.Gender, &user.RegisterData, &user.AvatarURL); err != nil {
-//			fmt.Println(err)
-//			return nil, err
-//		}
-//		users = append(users, user)
-//	}
-//	return users, nil
-//}
 
 // GetUserCount 获取所有用户数量
 func GetUserCount() (count int, err error) {

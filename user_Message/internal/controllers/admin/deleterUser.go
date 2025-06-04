@@ -3,7 +3,7 @@ package admin
 import (
 	"log"
 	"net/http"
-	"web_userMessage/user_Message/internal/controllers/user"
+	ms "web_userMessage/user_Message/internal/MySession"
 	md "web_userMessage/user_Message/internal/models"
 	cm "web_userMessage/user_Message/pkg/utils"
 )
@@ -16,7 +16,7 @@ func DeleterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	phone := r.FormValue("phone")
-	session, err := user.Store.Get(r, user.StoreName)
+	session, err := ms.Store.Get(r, ms.StoreName)
 	phoneNew, _ := session.Values["phone"].(string)
 	if phone == phoneNew {
 		cm.SendMessage(w, 500, "不能删除自己")

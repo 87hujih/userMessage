@@ -2,14 +2,14 @@ package auth
 
 import (
 	"net/http"
-	"web_userMessage/user_Message/internal/controllers/user"
+	ms "web_userMessage/user_Message/internal/MySession"
 )
 
 // Logout 退出登录
 func Logout(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		session, _ := user.Store.Get(r, user.StoreName)
-		// 清空 session 数据
+		session, _ := ms.Store.Get(r, ms.StoreName)
+		// 清空 MySession 数据
 		session.Values = make(map[interface{}]interface{})
 		err := session.Save(r, w)
 		if err != nil {

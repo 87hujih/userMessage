@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	ms "web_userMessage/user_Message/internal/MySession"
 	"web_userMessage/user_Message/internal/controllers/user"
 	md "web_userMessage/user_Message/internal/models"
 	cm "web_userMessage/user_Message/pkg/utils"
@@ -40,7 +41,7 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "仅支持图片格式", http.StatusBadRequest)
 		return
 	}
-	session, err := user.Store.Get(r, user.StoreName)
+	session, err := ms.Store.Get(r, ms.StoreName)
 	if err != nil {
 		http.Error(w, "会话无效", http.StatusInternalServerError)
 		return

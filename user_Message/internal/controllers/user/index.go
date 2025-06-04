@@ -2,26 +2,20 @@ package user
 
 import (
 	"fmt"
-	"github.com/gorilla/sessions"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
+	ms "web_userMessage/user_Message/internal/MySession"
 	md "web_userMessage/user_Message/internal/models"
 	cm "web_userMessage/user_Message/pkg/utils"
 )
 
 const (
-	StoreName = "MMM-666"
 	// AvatarDir 存放头像的目录
 	AvatarDir = "user_Message/user_img"
 	//登录目录
 	loginName = "/login"
-)
-
-var (
-	// Store 定义 Session Store
-	Store = sessions.NewCookieStore([]byte("tL9JQbPqzCjHkK+7DcFjzrEwJ3QoO34="))
 )
 
 // Index 进入页面
@@ -68,7 +62,7 @@ func parseTemplateWithFuncs(path string, name string) (*template.Template, error
 
 // HomePage 系统首页
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	session, err := Store.Get(r, StoreName)
+	session, err := ms.Store.Get(r, ms.StoreName)
 	if err != nil {
 		http.Redirect(w, r, loginName, http.StatusFound)
 		return

@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	ms "web_userMessage/user_Message/internal/MySession"
 	md "web_userMessage/user_Message/internal/models"
 	cm "web_userMessage/user_Message/pkg/utils"
 )
 
 // PerCenter 个人中心
 func PerCenter(w http.ResponseWriter, r *http.Request) {
-	session, err := Store.Get(r, StoreName)
+	session, err := ms.Store.Get(r, ms.StoreName)
 	if err != nil {
 		http.Error(w, "会话获取失败", http.StatusInternalServerError)
 		return
