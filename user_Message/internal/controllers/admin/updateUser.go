@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	md "web_userMessage/user_Message/internal/models"
-	cm "web_userMessage/user_Message/pkg/utils"
+	"web_userMessage/user_Message/internal/service"
+	"web_userMessage/user_Message/pkg/utils"
 )
 
 // UpdateUser 编辑用户信息
@@ -21,12 +21,15 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	gender := r.FormValue("gender")
 	id, _ := strconv.Atoi(userId)
-	err = md.AlterInformation(username, age, email, gender, int64(id))
+
+	//处理更新用户信息业务
+	err = service.UpdateUserService(username, age, email, gender, int64(id))
 	if err != nil {
-		cm.SendMessage(w, 500, "信息修改失败")
+		utils.SendMessage(w, 500, "信息修改失败")
 		log.Println(err)
 		return
 	}
+
 	// 信息保存成功
-	cm.SendMessage(w, 200, "修改成功")
+	utils.SendMessage(w, 200, "修改成功")
 }

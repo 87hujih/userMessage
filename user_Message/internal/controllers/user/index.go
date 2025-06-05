@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	ms "web_userMessage/user_Message/internal/MySession"
-	md "web_userMessage/user_Message/internal/models"
+	md "web_userMessage/user_Message/internal/dao"
+	"web_userMessage/user_Message/internal/middleware"
 	cm "web_userMessage/user_Message/pkg/utils"
 )
 
@@ -62,7 +62,7 @@ func parseTemplateWithFuncs(path string, name string) (*template.Template, error
 
 // HomePage 系统首页
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	session, err := ms.Store.Get(r, ms.StoreName)
+	session, err := middleware.Store.Get(r, middleware.StoreName)
 	if err != nil {
 		http.Redirect(w, r, loginName, http.StatusFound)
 		return
@@ -118,7 +118,6 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	// 执行指定模板
 	err = files.ExecuteTemplate(w, "dashboard", data)
 	if err != nil {
-
 		fmt.Println("执行模板出错:", err)
 		return
 	}

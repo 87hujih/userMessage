@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	md "web_userMessage/user_Message/internal/models"
+	"web_userMessage/user_Message/internal/service"
 	"web_userMessage/user_Message/pkg/utils"
 )
 
@@ -32,8 +32,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		name := r.FormValue("username")
 		password := r.FormValue("password")
 		phone := r.FormValue("phone")
-		//注册账号到数据库
-		err = md.RegisterUser(name, password, phone)
+
+		//处理注册用户业务
+		err = service.RegisterService(name, password, phone)
 		if err != nil {
 			if errors.Is(err, utils.ERROR_USER_EXISTS) {
 				utils.SendMessage(w, 400, "手机号已被注册")
@@ -42,6 +43,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+
 		// 注册成功
 		utils.SendMessage(w, 200, "注册成功")
 	}

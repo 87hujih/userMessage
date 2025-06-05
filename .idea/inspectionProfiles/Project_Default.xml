@@ -5,6 +5,7 @@
       <functions>
         <function importPath="database/sql" name="Open" />
         <function importPath="web_userMessage/user_Message/models" name="GetUser" />
+        <function importPath="web_userMessage/user_Message/internal/dao" name="GetUser" />
       </functions>
       <methods>
         <method importPath="database/sql" receiver="*DB" name="Exec" />

@@ -1,4 +1,4 @@
-package models
+package dao
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 	"time"
+	"web_userMessage/user_Message/internal/models"
 	"web_userMessage/user_Message/pkg/utils"
 )
 
@@ -58,7 +59,6 @@ func LoginUser(phone string, password string) (err error) {
 	var count int
 	err = db.QueryRow("SELECT COUNT(*) FROM users WHERE phone_number = ? AND password = ?", phone, password).Scan(&count)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		log.Println("数据库查询错误 err=", err)
 		return err
 	}
 	if count <= 0 {
@@ -88,18 +88,18 @@ func ChangePsd(phone string, password string) (err error) {
 /*用户信息*/
 
 // GetUser 获取到当前用户信息
-func GetUser(phone string) (u *User, err error) {
-	u = &User{}
+func GetUser(phone string) (u *models.User, err error) {
+	u = &models.User{}
 	row := db.QueryRow("select u.user_id,u.name,u.is_admin,i.age,i.email,i.gender,i.avatar_url from information i join users u on i.user_id=u.user_id where u.phone_number=?", phone)
 	err = row.Scan(&u.UserId, &u.UserName, &u.IsAdmin, &u.Age, &u.Email, &u.Gender, &u.AvatarURL)
 	if err != nil {
-		return &User{}, err
+		return &models.User{}, err
 	}
 	return u, nil
 }
 
 // GetAllUser 获取指定页的用户列表（分页查询）
-func GetAllUser(page, limit int) ([]User, error) {
+func GetAllUser(page, limit int) ([]models.User, error) {
 	offset := (page - 1) * limit
 	query := `
         SELECT u.user_id, u.name, u.phone_number, u.is_admin, i.age, i.gender, i.register_date, i.avatar_url 
@@ -118,9 +118,9 @@ func GetAllUser(page, limit int) ([]User, error) {
 		}
 	}(rows)
 
-	var users []User
+	var users []models.User
 	for rows.Next() {
-		var user User
+		var user models.User
 		if err := rows.Scan(
 			&user.UserId,
 			&user.UserName,

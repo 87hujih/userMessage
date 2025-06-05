@@ -9,20 +9,32 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	ms "web_userMessage/user_Message/internal/MySession"
 	"web_userMessage/user_Message/internal/controllers/user"
-	md "web_userMessage/user_Message/internal/models"
+	"web_userMessage/user_Message/internal/middleware"
+	"web_userMessage/user_Message/internal/service"
 	cm "web_userMessage/user_Message/pkg/utils"
 )
 
 // UploadAvatar 头像上传处理
 func UploadAvatar(w http.ResponseWriter, r *http.Request) {
+	//身份验证
+	session, err := middleware.Store.Get(r, middleware.StoreName)
+	if err != nil {
+		http.Error(w, "会话无效", http.StatusInternalServerError)
+		return
+	}
+	userId, ok := session.Values["userId"].(int64)
+	if !ok {
+		http.Error(w, "用户未登录", http.StatusUnauthorized)
+		return
+	}
+
 	if r.Method != "POST" {
 		http.Error(w, "仅支持 POST 请求", http.StatusMethodNotAllowed)
 		return
 	}
 	// 设置最大上传大小为 5MB
-	err := r.ParseMultipartForm(5 << 20)
+	err = r.ParseMultipartForm(5 << 20)
 	if err != nil {
 		http.Error(w, "解析表单失败", http.StatusBadRequest)
 		return
@@ -41,16 +53,6 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "仅支持图片格式", http.StatusBadRequest)
 		return
 	}
-	session, err := ms.Store.Get(r, ms.StoreName)
-	if err != nil {
-		http.Error(w, "会话无效", http.StatusInternalServerError)
-		return
-	}
-	userId, ok := session.Values["userId"].(int64)
-	if !ok {
-		http.Error(w, "用户未登录", http.StatusUnauthorized)
-		return
-	}
 	// 生成唯一文件名
 	filename := generateUniqueFilename(handler.Filename)
 	// 保存文件
@@ -59,9 +61,9 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "文件保存失败", http.StatusInternalServerError)
 		return
 	}
-
-	// 更新数据库
-	if err := md.UpdateUserAvatar(userId, filename); err != nil {
+	//处理更新头像业务
+	err = service.UploadAvatarService(userId, filePath)
+	if err != nil {
 		http.Error(w, "更新数据库失败", http.StatusInternalServerError)
 		return
 	}

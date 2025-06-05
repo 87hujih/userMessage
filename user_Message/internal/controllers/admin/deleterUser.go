@@ -3,30 +3,30 @@ package admin
 import (
 	"log"
 	"net/http"
-	ms "web_userMessage/user_Message/internal/MySession"
-	md "web_userMessage/user_Message/internal/models"
-	cm "web_userMessage/user_Message/pkg/utils"
+	"web_userMessage/user_Message/internal/middleware"
+	"web_userMessage/user_Message/internal/service"
+	"web_userMessage/user_Message/pkg/utils"
 )
 
 // DeleterUser 删除用户
 func DeleterUser(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+	session, err := middleware.Store.Get(r, middleware.StoreName)
+	phoneNew, ok := session.Values["phone"].(string)
+	if !ok || err != nil {
+		http.Error(w, "用户未登录", http.StatusUnauthorized)
+		return
+	}
+	err = r.ParseForm()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	phone := r.FormValue("phone")
-	session, err := ms.Store.Get(r, ms.StoreName)
-	phoneNew, _ := session.Values["phone"].(string)
-	if phone == phoneNew {
-		cm.SendMessage(w, 500, "不能删除自己")
-		log.Println(err)
-		return
-	}
-	err = md.DeleteUserByPhone(phone)
+	//处理删除业务
+	err = service.DeleterUserService(phone, phoneNew)
 	if err != nil {
-		cm.SendMessage(w, 500, "删除用户失败")
+		utils.SendMessage(w, 500, "删除用户失败")
 		return
 	}
-	cm.SendMessage(w, 200, "删除成功")
+	utils.SendMessage(w, 200, "删除成功")
 }

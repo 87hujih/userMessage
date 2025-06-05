@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	md "web_userMessage/user_Message/internal/models"
+	"web_userMessage/user_Message/internal/service"
 	"web_userMessage/user_Message/pkg/utils"
 )
 
@@ -30,7 +30,9 @@ func SeekPsd(w http.ResponseWriter, r *http.Request) {
 		}
 		phone := r.FormValue("phone")
 		password := r.FormValue("password")
-		err = md.ChangePsd(phone, password)
+
+		//处理修改密码业务
+		err = service.SeeKPsdService(phone, password)
 		if err != nil {
 			if errors.Is(err, utils.ERROR_USER_NOTEXISTS) {
 				utils.SendMessage(w, 400, "用户未注册")
@@ -40,6 +42,7 @@ func SeekPsd(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+
 		// 修改成功
 		utils.SendMessage(w, 200, "密码已修改成功！")
 	}

@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	ms "web_userMessage/user_Message/internal/MySession"
+	"web_userMessage/user_Message/internal/middleware"
 	md "web_userMessage/user_Message/internal/models"
-	cm "web_userMessage/user_Message/pkg/utils"
+	"web_userMessage/user_Message/internal/service"
+	"web_userMessage/user_Message/pkg/utils"
 )
 
 // PerCenter 个人中心
 func PerCenter(w http.ResponseWriter, r *http.Request) {
-	session, err := ms.Store.Get(r, ms.StoreName)
+	session, err := middleware.Store.Get(r, middleware.StoreName)
 	if err != nil {
 		http.Error(w, "会话获取失败", http.StatusInternalServerError)
 		return
@@ -20,14 +21,14 @@ func PerCenter(w http.ResponseWriter, r *http.Request) {
 	// 获取登录手机号
 	phone, ok := session.Values["phone"].(string)
 	if !ok {
-		cm.SendMessage(w, 401, "未登录，请先登录")
+		utils.SendMessage(w, 401, "未登录，请先登录")
 		return
 	}
 
 	// 获取用户信息
-	user, err := md.GetUser(phone)
+	user, err := service.GetUserByIdService(phone)
 	if err != nil {
-		cm.SendMessage(w, 500, "获取用户失败")
+		utils.SendMessage(w, 500, "获取用户失败")
 		return
 	}
 
@@ -67,7 +68,7 @@ func handleGet(w http.ResponseWriter, r *http.Request, user *md.User) {
 // 处理 PerCenter中POST 请求：保存用户信息
 func handlePost(w http.ResponseWriter, r *http.Request, userId int64) {
 	if err := r.ParseForm(); err != nil {
-		cm.SendMessage(w, 400, "表单解析失败")
+		utils.SendMessage(w, 400, "表单解析失败")
 		return
 	}
 
@@ -76,12 +77,13 @@ func handlePost(w http.ResponseWriter, r *http.Request, userId int64) {
 	email := r.FormValue("email")
 	gender := r.FormValue("gender")
 
-	err := md.AlterInformation(username, age, email, gender, userId)
+	//处理更新用户信息业务
+	err := service.UpdateUserService(username, age, email, gender, userId)
 	if err != nil {
-		cm.SendMessage(w, 500, "保存信息失败")
+		utils.SendMessage(w, 500, "保存信息失败")
 		fmt.Println("保存信息失败:", err)
 		return
 	}
 
-	cm.SendMessage(w, 200, "保存成功")
+	utils.SendMessage(w, 200, "保存成功")
 }

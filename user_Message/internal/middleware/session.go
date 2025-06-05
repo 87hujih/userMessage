@@ -1,4 +1,4 @@
-package MySession
+package middleware
 
 import (
 	"github.com/gorilla/sessions"
@@ -27,7 +27,7 @@ func SetupSession(w http.ResponseWriter, r *http.Request, store *sessions.Cookie
 	// 配置 MySession 选项
 	session.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   86400, // 一天
+		MaxAge:   3600, // 一小时
 		HttpOnly: true,
 		Secure:   false, // 开发环境用 false，生产环境用 true
 		SameSite: http.SameSiteLaxMode,

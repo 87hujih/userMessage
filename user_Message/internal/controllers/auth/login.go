@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	ms "web_userMessage/user_Message/internal/MySession"
-	md "web_userMessage/user_Message/internal/models"
+	"web_userMessage/user_Message/internal/middleware"
+	"web_userMessage/user_Message/internal/service"
 	"web_userMessage/user_Message/pkg/utils"
 )
 
@@ -28,7 +28,10 @@ func handlePost(w http.ResponseWriter, r *http.Request) error {
 	}
 	phone := r.FormValue("phone")
 	password := r.FormValue("password")
-	if err := md.LoginUser(phone, password); err != nil {
+
+	//处理登录业务
+	err, id := service.LoginService(phone, password)
+	if err != nil {
 		if errors.Is(err, utils.ERROR_USER_INFORMATION) {
 			utils.SendMessage(w, 400, "账号或密码错误")
 		} else {
@@ -36,19 +39,15 @@ func handlePost(w http.ResponseWriter, r *http.Request) error {
 		}
 		return err
 	}
-	//通过用户手机号获取用户信息
-	u, err := md.GetUser(phone)
-	if err != nil {
-		utils.SendMessage(w, 500, "获取用户失败")
-		return err
-	}
+
 	// 登录成功 设置session
-	err = ms.SetupSession(w, r, ms.Store, ms.StoreName, phone, u.UserId.Int64)
+	err = middleware.SetupSession(w, r, middleware.Store, middleware.StoreName, phone, id)
 	if err != nil {
 		log.Println("设置 session 失败:", err)
 		utils.SendMessage(w, 500, "设置 session 失败")
 		return err
 	}
+
 	utils.SendMessage(w, 200, "登录成功")
 	return nil
 }
