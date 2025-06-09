@@ -36,8 +36,6 @@ func RegisterUser(username, password, phone string) error {
 	if err != nil {
 		return err
 	}
-	now := time.Now().Format("2006-01-02")
-	_, err = DB.Exec("INSERT INTO information (user_id, register_date) VALUES (?, ?)", userID, now)
 	return err
 }
 
