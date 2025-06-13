@@ -1,0 +1,7 @@
+ERROR: 2025/06/06 16:55:59 logger.go:81: 数据库初始化失败: 数据库连接测试失败: dial tcp: lookup tcp/%!d(string=3306): unknown port
+ERROR: 2025/06/09 14:31:13 logger.go:61: 检查手机号失败: Error 1146 (42S02): Table 'ums.user' doesn't exist
+ERROR: 2025/06/09 15:13:31 logger.go:61: 开始事务失败: sql: database is closed
+ERROR: 2025/06/09 15:14:56 logger.go:61: 检查手机号失败: Error 1146 (42S02): Table 'ums.user' doesn't exist
+ERROR: 2025/06/09 15:29:21 logger.go:61: 检查手机号失败: Error 1054 (42S22): Unknown column 'phone' in 'where clause'
+ERROR: 2025/06/13 11:08:01 logger.go:61: 插入用户数据失败: Error 1136 (21S01): Column count doesn't match value count at row 1
+ERROR: 2025/06/13 11:08:13 logger.go:61: 插入用户数据失败: Error 1136 (21S01): Column count doesn't match value count at row 1
