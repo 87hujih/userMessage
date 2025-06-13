@@ -32,7 +32,9 @@ func RegisterUser(username, password, phone string) error {
 	if err != nil {
 		return err
 	}
+	
 	userID, err := result.LastInsertId()
+	_, err = DB.Exec("INSERT INTO information (user_id) VALUES (?, ?)", userID)
 	if err != nil {
 		return err
 	}
