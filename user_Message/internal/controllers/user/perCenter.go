@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"web_userMessage/user_Message/internal/middleware"
-	md "web_userMessage/user_Message/internal/models"
+	"web_userMessage/user_Message/internal/models"
 	"web_userMessage/user_Message/internal/service"
 	"web_userMessage/user_Message/pkg/utils"
 )
@@ -19,11 +19,7 @@ func PerCenter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 获取登录手机号
-	phone, ok := session.Values["phone"].(string)
-	if !ok {
-		utils.SendMessage(w, 401, "未登录，请先登录")
-		return
-	}
+	phone, _ := session.Values["phone"].(string)
 
 	// 获取用户信息
 	user, err := service.GetUserByIdService(phone)
@@ -44,7 +40,7 @@ func PerCenter(w http.ResponseWriter, r *http.Request) {
 }
 
 // 处理 PerCenter中GET 请求：渲染页面
-func handleGet(w http.ResponseWriter, r *http.Request, user *md.User) {
+func handleGet(w http.ResponseWriter, r *http.Request, user *models.User) {
 	files, err := template.ParseFiles("user_Message/internal/views/personalCenter.html")
 	if err != nil {
 		http.Error(w, "页面不存在", http.StatusInternalServerError)
@@ -80,7 +76,7 @@ func handlePost(w http.ResponseWriter, r *http.Request, userId int64) {
 	//处理更新用户信息业务
 	err := service.UpdateUserService(username, age, email, gender, userId)
 	if err != nil {
-		utils.SendMessage(w, 500, "保存信息失败")
+		utils.SendMessage(w, 500, err.Error())
 		fmt.Println("保存信息失败:", err)
 		return
 	}

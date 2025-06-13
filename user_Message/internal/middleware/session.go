@@ -1,43 +1,58 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gorilla/sessions"
 	"log"
 	"net/http"
+	"web_userMessage/user_Message/config"
 )
 
 var (
 	// Store 定义 Session Store
-	Store     = sessions.NewCookieStore([]byte("tL9JQbPqzCjHkK+7DcFjzrEwJ3QoO34="))
-	StoreName = "MMM-666"
+	Store     *sessions.CookieStore
+	StoreName string
 )
 
-// SetupSession 设置用户 MySession
+func init() {
+	cfg := config.LoadConfig()
+	Store = sessions.NewCookieStore([]byte(cfg.Session.SecretKey))
+	StoreName = cfg.Session.Name
+}
+
+// SetupSession 设置用户Session
 func SetupSession(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore, storeName, phone string, userId int64) error {
-	session, err := store.Get(r, storeName)
-	if err != nil {
-		log.Println("获取 MySession 失败:", err)
-		return err
+	if phone == "" {
+		return fmt.Errorf("手机号不能为空")
+	}
+	if userId <= 0 {
+		return fmt.Errorf("无效的用户ID")
 	}
 
-	// 设置 MySession 值
+	session, err := store.Get(r, storeName)
+	if err != nil {
+		log.Printf("获取Session失败: %v", err)
+		return fmt.Errorf("获取Session失败: %w", err)
+	}
+
+	// 设置Session值
 	session.Values["phone"] = phone
 	session.Values["userId"] = userId
 
-	// 配置 MySession 选项
+	// 从配置文件获取Session选项
+	cfg := config.LoadConfig()
 	session.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   3600, // 一小时
-		HttpOnly: true,
-		Secure:   false, // 开发环境用 false，生产环境用 true
+		MaxAge:   cfg.Session.MaxAge,
+		HttpOnly: cfg.Session.HttpOnly,
+		Secure:   cfg.Session.Secure,
 		SameSite: http.SameSiteLaxMode,
 	}
 
-	// 保存 MySession
-	err = session.Save(r, w)
-	if err != nil {
-		log.Println("保存 MySession 失败:", err)
-		return err
+	// 保存Session
+	if err = session.Save(r, w); err != nil {
+		log.Printf("保存Session失败: %v", err)
+		return fmt.Errorf("保存Session失败: %w", err)
 	}
 
 	return nil

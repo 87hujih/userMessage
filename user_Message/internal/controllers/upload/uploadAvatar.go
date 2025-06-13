@@ -12,11 +12,16 @@ import (
 	"web_userMessage/user_Message/internal/controllers/user"
 	"web_userMessage/user_Message/internal/middleware"
 	"web_userMessage/user_Message/internal/service"
-	cm "web_userMessage/user_Message/pkg/utils"
+	"web_userMessage/user_Message/pkg/utils"
 )
 
-// UploadAvatar 头像上传处理
-func UploadAvatar(w http.ResponseWriter, r *http.Request) {
+// Avatar 头像上传处理
+func Avatar(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "仅支持 POST 请求", http.StatusMethodNotAllowed)
+		return
+	}
+
 	//身份验证
 	session, err := middleware.Store.Get(r, middleware.StoreName)
 	if err != nil {
@@ -29,16 +34,13 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method != "POST" {
-		http.Error(w, "仅支持 POST 请求", http.StatusMethodNotAllowed)
-		return
-	}
 	// 设置最大上传大小为 5MB
 	err = r.ParseMultipartForm(5 << 20)
 	if err != nil {
 		http.Error(w, "解析表单失败", http.StatusBadRequest)
 		return
 	}
+
 	// 获取上传的文件
 	file, handler, err := r.FormFile("avatar")
 	if err != nil {
@@ -48,11 +50,13 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		_ = file.Close()
 	}()
+
 	// 检查文件类型
 	if !strings.HasPrefix(handler.Header.Get("Content-Type"), "image/") {
 		http.Error(w, "仅支持图片格式", http.StatusBadRequest)
 		return
 	}
+
 	// 生成唯一文件名
 	filename := generateUniqueFilename(handler.Filename)
 	// 保存文件
@@ -61,14 +65,15 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "文件保存失败", http.StatusInternalServerError)
 		return
 	}
+
 	//处理更新头像业务
-	err = service.UploadAvatarService(userId, filePath)
+	err = service.UploadAvatarService(userId, filename)
 	if err != nil {
 		http.Error(w, "更新数据库失败", http.StatusInternalServerError)
 		return
 	}
 
-	cm.SendMessage(w, 200, "头像上传成功")
+	utils.SendMessage(w, 200, "头像上传成功")
 }
 
 // generateUniqueFilename 生成唯一的文件名

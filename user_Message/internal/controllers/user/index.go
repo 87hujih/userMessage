@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	md "web_userMessage/user_Message/internal/dao"
 	"web_userMessage/user_Message/internal/middleware"
+	"web_userMessage/user_Message/internal/service"
 	cm "web_userMessage/user_Message/pkg/utils"
 )
 
@@ -74,12 +74,6 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := md.GetUser(phone)
-	if err != nil {
-		http.Redirect(w, r, loginName, http.StatusFound)
-		return
-	}
-
 	// 获取当前页码
 	page := 1
 	if p := r.FormValue("page"); p != "" {
@@ -87,15 +81,14 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 			page = pg
 		}
 	}
-
 	limit := 10
-	allUser, err := md.GetAllUser(page, limit)
-	if err != nil {
-		cm.SendMessage(w, 500, "获取用户失败")
-		return
-	}
 
-	total, _ := md.GetUserCount()
+	//处理页面所有用户展示业务
+	err, allUser, user, total := service.HomePageService(phone, page, limit)
+
+	if err != nil {
+		cm.SendMessage(w, 500, err.Error())
+	}
 	totalPages := (total + limit - 1) / limit
 
 	data := map[string]interface{}{

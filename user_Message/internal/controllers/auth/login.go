@@ -34,6 +34,7 @@ func handlePost(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		if errors.Is(err, utils.ERROR_USER_INFORMATION) {
 			utils.SendMessage(w, 400, "账号或密码错误")
+			return nil
 		} else {
 			utils.SendMessage(w, 500, "内部服务器错误")
 		}
@@ -47,7 +48,6 @@ func handlePost(w http.ResponseWriter, r *http.Request) error {
 		utils.SendMessage(w, 500, "设置 session 失败")
 		return err
 	}
-
 	utils.SendMessage(w, 200, "登录成功")
 	return nil
 }

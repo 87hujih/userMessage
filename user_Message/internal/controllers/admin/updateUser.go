@@ -25,7 +25,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	//处理更新用户信息业务
 	err = service.UpdateUserService(username, age, email, gender, int64(id))
 	if err != nil {
-		utils.SendMessage(w, 500, "信息修改失败")
+		utils.SendMessage(w, 500, err.Error())
 		log.Println(err)
 		return
 	}

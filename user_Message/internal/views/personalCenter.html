@@ -108,6 +108,7 @@
 
                 if (response.code === 200) {
                     alert("信息修改成功");
+                    location.reload()
                 } else if (response.code === 500) {
                     alert("错误：" + response.message);
                 } else {

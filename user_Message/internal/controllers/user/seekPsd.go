@@ -35,14 +35,13 @@ func SeekPsd(w http.ResponseWriter, r *http.Request) {
 		err = service.SeeKPsdService(phone, password)
 		if err != nil {
 			if errors.Is(err, utils.ERROR_USER_NOTEXISTS) {
-				utils.SendMessage(w, 400, "用户未注册")
+				utils.SendMessage(w, 400, "该用户未注册")
 			} else {
-				log.Printf("数据库错误: %v", err)
-				utils.SendMessage(w, 500, "内部服务器错误")
+				log.Printf("%v", err)
+				utils.SendMessage(w, 400, err.Error())
 			}
 			return
 		}
-
 		// 修改成功
 		utils.SendMessage(w, 200, "密码已修改成功！")
 	}

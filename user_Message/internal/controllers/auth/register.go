@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"html/template"
 	"log"
 	"net/http"
@@ -36,11 +35,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		//处理注册用户业务
 		err = service.RegisterService(name, password, phone)
 		if err != nil {
-			if errors.Is(err, utils.ERROR_USER_EXISTS) {
-				utils.SendMessage(w, 400, "手机号已被注册")
-			} else {
-				utils.SendMessage(w, 500, "注册失败")
-			}
+			log.Println(err)
+			utils.SendMessage(w, 400, err.Error())
 			return
 		}
 

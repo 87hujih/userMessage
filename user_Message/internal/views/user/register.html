@@ -64,12 +64,8 @@
                 }
                 if (response.code===200) {
                     window.location.href = "/login" // 跳转到登录页面
-                }else if (response.code===400){
-                    alert("错误:"+response.message);
-                }else if(response.code===500){
-                    alert("服务器内部错误，请稍后再试..！")
                 }else {
-                    alert("未知错误")
+                    alert(response.message)
                 }
             }).fail(function (){
                 alert("请求失败，请重试！")
