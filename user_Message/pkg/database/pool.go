@@ -30,7 +30,8 @@ func init() {
 	// 打开数据库连接
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		fmt.Errorf("打开数据库连接失败: %w", err)
+		logger.Errorf("打开数据库连接失败: %v", err)
+		panic(fmt.Sprintf("数据库初始化失败: %v", err))
 	}
 
 	// 设置连接池参数
@@ -40,7 +41,8 @@ func init() {
 
 	// 测试数据库连接
 	if err := db.Ping(); err != nil {
-		fmt.Errorf("数据库连接测试失败: %w", err)
+		logger.Errorf("数据库连接测试失败: %v", err)
+		panic(fmt.Sprintf("数据库连接测试失败: %v", err))
 	}
 	DB = db
 	logger.Info("数据库连接池初始化成功")

@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // Config 应用配置结构
@@ -53,7 +54,7 @@ func LoadConfig() *Config {
 	//读取项目跟目录下的.env文件把里面的配置加载为环境变量
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Println("未找到 .env 文件，继续使用默认或系统环境变量")
+		log.Printf("警告: 未找到 .env 文件，继续使用默认或系统环境变量: %v", err)
 	}
 	return &Config{
 		Database: DatabaseConfig{
@@ -104,6 +105,8 @@ func getEnvAsInt(key string, defaultValue int) int {
 	if value := os.Getenv(key); value != "" {
 		if intValue, err := strconv.Atoi(value); err == nil {
 			return intValue
+		} else {
+			log.Printf("警告: 环境变量 %s 的值 '%s' 不是有效的整数，使用默认值 %d", key, value, defaultValue)
 		}
 	}
 	return defaultValue
@@ -113,6 +116,8 @@ func getEnvAsBool(key string, defaultValue bool) bool {
 	if value := os.Getenv(key); value != "" {
 		if boolValue, err := strconv.ParseBool(value); err == nil {
 			return boolValue
+		} else {
+			log.Printf("警告: 环境变量 %s 的值 '%s' 不是有效的布尔值，使用默认值 %t", key, value, defaultValue)
 		}
 	}
 	return defaultValue
@@ -122,6 +127,8 @@ func getEnvAsDuration(key string, defaultValue time.Duration) time.Duration {
 	if value := os.Getenv(key); value != "" {
 		if duration, err := time.ParseDuration(value); err == nil {
 			return duration
+		} else {
+			log.Printf("警告: 环境变量 %s 的值 '%s' 不是有效的时间格式，使用默认值 %v", key, value, defaultValue)
 		}
 	}
 	return defaultValue
