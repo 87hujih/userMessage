@@ -52,12 +52,13 @@ func main() {
 	http.HandleFunc("/logout", auth.Logout)
 
 	// 需认证路由
-	http.Handle("/homePage", middleware.Auth(middleware.Store, middleware.StoreName, "/login")(http.HandlerFunc(user.HomePage)))
-	http.Handle("/personalCenter", middleware.Auth(middleware.Store, middleware.StoreName, "/login")(http.HandlerFunc(user.PerCenter)))
-	http.Handle("/uploadAvatar", middleware.Auth(middleware.Store, middleware.StoreName, "/login")(http.HandlerFunc(upload.Avatar)))
-	http.Handle("/getUserById", middleware.Auth(middleware.Store, middleware.StoreName, "/login")(http.HandlerFunc(admin.GetUserById)))
-	http.Handle("/modifyInformation", middleware.Auth(middleware.Store, middleware.StoreName, "/login")(http.HandlerFunc(admin.UpdateUser)))
-	http.Handle("/deleterUser", middleware.Auth(middleware.Store, middleware.StoreName, "/login")(http.HandlerFunc(admin.DeleterUser)))
+	middleware.RegisterAuthRoute("/homePage", user.HomePage)
+	middleware.RegisterAuthRoute("/personalCenter", user.PerCenter)
+	middleware.RegisterAuthRoute("/uploadAvatar", upload.Avatar)
+	middleware.RegisterAuthRoute("/getUserById", admin.GetUserById)
+	middleware.RegisterAuthRoute("/modifyInformation", admin.UpdateUser)
+	middleware.RegisterAuthRoute("/deleterUser", admin.DeleterUser)
+
 	logger.Infof("服务器启动在: %s", server.Addr)
 	logger.Infof("本地访问: http://localhost%s", cfg.Server.Port)
 	logger.Infof("局域网访问: http://192.168.1.100%s", cfg.Server.Port)
@@ -65,4 +66,5 @@ func main() {
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Panicln(err)
 	}
+
 }

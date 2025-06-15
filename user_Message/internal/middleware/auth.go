@@ -31,3 +31,8 @@ func Auth(store *sessions.CookieStore, storeName string, loginURL string) func(h
 		})
 	}
 }
+
+// RegisterAuthRoute 用户状态认证
+func RegisterAuthRoute(pattern string, handler http.HandlerFunc) {
+	http.Handle(pattern, Auth(Store, StoreName, "/login")(handler))
+}
